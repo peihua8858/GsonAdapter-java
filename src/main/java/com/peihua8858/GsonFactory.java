@@ -1,12 +1,6 @@
 package com.peihua8858;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonSerializer;
-import com.google.gson.TypeAdapter;
+import com.google.gson.*;
 import com.google.gson.internal.ConstructorConstructor;
 import com.google.gson.internal.Excluder;
 import com.google.gson.internal.bind.MapTypeAdapterFactory;
@@ -37,6 +31,12 @@ public class GsonFactory {
         return gsonBuilder;
     }
 
+    public static GsonBuilder createBuilder() {
+        GsonBuilder gsonBuilder = createDefaultBuild();
+        gsonBuilder.setLenient();
+        return gsonBuilder;
+    }
+
     public static Gson createDefaultGson() {
         return defaultBuilder().create();
     }
@@ -50,17 +50,17 @@ public class GsonFactory {
         //注入 type adapter
         // 集合
         JsonAdapterAnnotationTypeAdapterFactory jsonAdapterFactory = new JsonAdapterAnnotationTypeAdapterFactory(
-                new ConstructorConstructor(Collections.<Type, InstanceCreator<?>>emptyMap(), true));
+                new ConstructorConstructor(Collections.<Type, InstanceCreator<?>>emptyMap(), true, Collections.<ReflectionAccessFilter>emptyList()));
 
         ReflectiveTypeAdapterFactory rta = new ReflectiveTypeAdapterFactory(
-                new ConstructorConstructor(Collections.<Type, InstanceCreator<?>>emptyMap(), true),
+                new ConstructorConstructor(Collections.<Type, InstanceCreator<?>>emptyMap(), true, Collections.<ReflectionAccessFilter>emptyList()),
                 FieldNamingPolicy.IDENTITY,
                 Excluder.DEFAULT,
                 jsonAdapterFactory);
         //Object
         gsonBuilder.registerTypeAdapterFactory(rta);
-        gsonBuilder.registerTypeAdapterFactory(new CollectionTypeAdapterFactory(new ConstructorConstructor(Collections.<Type, InstanceCreator<?>>emptyMap(), true)));
-        gsonBuilder.registerTypeAdapterFactory(new MapTypeAdapterFactory(new ConstructorConstructor(Collections.<Type, InstanceCreator<?>>emptyMap(), true), false));
+        gsonBuilder.registerTypeAdapterFactory(new CollectionTypeAdapterFactory(new ConstructorConstructor(Collections.<Type, InstanceCreator<?>>emptyMap(), true, Collections.<ReflectionAccessFilter>emptyList())));
+        gsonBuilder.registerTypeAdapterFactory(new MapTypeAdapterFactory(new ConstructorConstructor(Collections.<Type, InstanceCreator<?>>emptyMap(), true, Collections.<ReflectionAccessFilter>emptyList()), false));
 
         //注入 8大基本类型 type adapter
         gsonBuilder.registerTypeAdapter(Double.class, DOUBLE);
